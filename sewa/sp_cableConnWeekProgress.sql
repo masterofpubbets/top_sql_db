@@ -4,6 +4,10 @@ If(OBJECT_ID('tempdb..#temp_cableConnecting') Is Not Null)
 Begin
     Drop Table #temp_cableConnecting
 End
+If(OBJECT_ID('tempdb..#temp_cableConnectingTotal') Is Not Null)
+Begin
+    Drop Table #temp_cableConnectingTotal
+End
 
 create table #temp_cableConnecting
 (
@@ -13,6 +17,15 @@ create table #temp_cableConnecting
     con_to_date date,
     con_from_date date,
     plan_connected_date date,
+    unit_id int
+)
+create table #temp_cableConnectingTotal
+(
+    dt DATE,
+    dtName NVarchar(50),
+    tag NVarchar(100),
+    con_total int,
+    plan_count int,
     unit_id int
 )
 
@@ -60,15 +73,43 @@ WITH
 INSERT INTO #temp_cableConnecting
 SELECT
     cteDate.dt, cteDate.dtName 
-, tblCables.tag, tblCables.con_to_date, tblCables.con_from_date, tblCables.plan_connected_date, tblCables.unit_id
+, tblCables.tag, NULL AS con_to_date, tblCables.con_from_date, tblCables.plan_connected_date, tblCables.unit_id
 FROM cteDate
-    LEFT JOIN tblCables ON ((tblCables.con_from_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt))
-                            OR
-                            (tblCables.con_to_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt)))
+    LEFT JOIN tblCables ON (tblCables.con_from_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt))
 WHERE cteDate.dtName in( 'Friday')
-OPTION(MAXRECURSION
-0)
+OPTION(MAXRECURSION 0);
 
+WITH
+    cteDate
+    as
+    (
+        SELECT ROW_NUMBER() OVER(ORDER BY NEWID()) as id, @fromD as dt,
+        DATENAME(dw, @fromD) as dtName
+
+        UNION ALL
+
+        SELECT id + 1 as id, DATEADD(day, 1, dt), DATENAME(dw, DATEADD(day, 1, 
+   dt)) dtName
+            FROM cteDate
+            WHERE dt < @toD
+    )
+
+INSERT INTO #temp_cableConnecting
+SELECT
+    cteDate.dt, cteDate.dtName 
+, tblCables.tag, tblCables.con_to_date, NULL AS con_from_date, tblCables.plan_connected_date, tblCables.unit_id
+FROM cteDate
+    LEFT JOIN tblCables ON (tblCables.con_to_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt))
+WHERE cteDate.dtName in( 'Friday')
+OPTION(MAXRECURSION 0);
+
+INSERT INTO #temp_cableConnectingTotal
+SELECT
+dt,dtName,tag
+,COUNT(con_from_date) + COUNT(con_to_date) AS con_total
+,COUNT(plan_connected_date) as plan_count,unit_id
+FROM #temp_cableConnecting
+GROUP BY dt,dtName,tag,plan_connected_date,unit_id
 
 select @col = STUFF((select distinct ',' + quotename(x.dt)
     FROM (SELECT DISTINCT dt
@@ -97,14 +138,14 @@ FROM
 SELECT * FROM (
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SELECT unit_id,''Planned Pulled'' as Planned,dt,CASE WHEN plan_con_from_date IS NOT NULL THEN design_length ELSE 0 END AS design_length FROM #temp_cableConnecting
+SELECT unit_id,''Planned Terminated'' as Planned,dt,con_total FROM #temp_cableConnectingTotal WHERE plan_count <> 0
 UNION ALL
-SELECT unit_id,''Not Planned Pulled'' as Planned,dt,CASE WHEN plan_con_from_date IS NULL THEN design_length ELSE 0 END AS design_length FROM #temp_cableConnecting
+SELECT unit_id,''Not Planned Terminated'' as Planned,dt,con_total FROM #temp_cableConnectingTotal WHERE plan_count = 0
 UNION ALL
-SELECT unit_id,''Pulled Total'' as Planned,dt,design_length FROM #temp_cableConnecting
+SELECT unit_id,''Terminated Total'' as Planned,dt,con_total FROM #temp_cableConnectingTotal
 ) as groupedResult
 PIVOT (
-	SUM(design_length) FOR dt IN (' + @col + ')
+	SUM(con_total) FOR dt IN (' + @col + ')
 ) as P
 ) as result
 GROUP BY unit_id,Planned,' + @col + '
@@ -117,10 +158,10 @@ SELECT ''Total'' as unit_name,''Total Not Planned'' as Planned,' + @colSum + '
 FROM 
 (
 SELECT * FROM (
-SELECT dt,CASE WHEN plan_con_from_date IS NULL THEN design_length ELSE 0 END AS design_length FROM #temp_cableConnecting
+SELECT dt,con_total FROM #temp_cableConnectingTotal WHERE plan_count = 0
 ) as groupedResult
 PIVOT (
-	SUM(design_length) FOR dt IN (' + @col + ')
+	SUM(con_total) FOR dt IN (' + @col + ')
 ) as P
 ) as result
 GROUP BY ' + @col + '
@@ -131,10 +172,10 @@ SELECT ''Total'' as unit_name,''Total Planned'' as Planned,' + @colSum + '
 FROM 
 (
 SELECT * FROM (
-SELECT dt,CASE WHEN plan_con_from_date IS NOT NULL THEN design_length ELSE 0 END AS design_length FROM #temp_cableConnecting
+SELECT dt,con_total FROM #temp_cableConnectingTotal WHERE plan_count <> 0
 ) as groupedResult
 PIVOT (
-	SUM(design_length) FOR dt IN (' + @col + ')
+	SUM(con_total) FOR dt IN (' + @col + ')
 ) as P
 ) as result
 GROUP BY ' + @col + '
@@ -146,22 +187,18 @@ SELECT ''Total'' as unit_name,''Total'' as Planned,' + @colSum + '
 FROM 
 (
 SELECT * FROM (
-SELECT dt,design_length FROM #temp_cableConnecting
+SELECT dt,con_total FROM #temp_cableConnectingTotal
 ) as groupedResult
 PIVOT (
-	SUM(design_length) FOR dt IN (' + @col + ')
+	SUM(con_total) FOR dt IN (' + @col + ')
 ) as P
 ) as result
 GROUP BY ' + @col + '
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ) as v
+WHERE unit_name IS NOT NULL
 ORDER BY unit_name
 '
 EXECUTE (@result)
 
 
-
-
-
-
-GO
