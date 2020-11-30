@@ -29,7 +29,7 @@ tblunits.unit_name as Unit
 ,0 AS [Calibration Actual]
 ,0 AS [Calibration Weekly]
 ,COUNT(tag) AS [Hookup Scope]
-,COUNT(hookup_date) AS [Hookup Actual]
+,SUM(CASE WHEN hookup_date <= @date THEN 1 ELSE 0 END) AS [Hookup Actual]
 ,SUM(CASE WHEN tblInstruments.hookup_date BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS [Hookup Weekly]
 FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
@@ -62,7 +62,7 @@ tblInstruments.hookup_type
 ,0 AS [Calibration Actual]
 ,0 AS [Calibration Weekly]
 ,COUNT(tag) AS [Hookup Scope]
-,COUNT(hookup_date) AS [Hookup Actual]
+,SUM(CASE WHEN hookup_date <= @DATE THEN 1 ELSE 0 END) AS [Hookup Actual]
 ,SUM(CASE WHEN tblInstruments.hookup_date BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS [Hookup Weekly]
 FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
