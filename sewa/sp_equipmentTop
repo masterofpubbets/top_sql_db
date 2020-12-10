@@ -1,0 +1,9 @@
+CREATE PROC sp_equipmentTop
+@top NVARCHAR(100)
+AS
+SELECT 
+tblEquipment.tag,tblEquipment.[type],tblEquipment.[description]
+,FORMAT(tblEquipment.erected_date,'dd/MM/yyyy') AS erected_date
+FROM tblEquipment
+INNER JOIN tblTOP ON tblEquipment.top_id = tblTOP.top_id
+WHERE tblTOP.top_name = @top

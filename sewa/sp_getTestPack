@@ -1,0 +1,14 @@
+CREATE PROC [dbo].[sp_getTestPack]
+AS
+SELECT 
+tblUnits.unit_name,tblTOP.top_name
+,tblHt.[ht_name] as tag,tblHT.test_type,tblHT.dia_scope
+,format(tested_date,'dd/MM/yyyy') as tested_date
+,format(reinstated_date,'dd/MM/yyyy') as reinstated_date
+FROM tblHt
+INNER JOIN tblUnits ON tblHt.unit_id = tblUnits.unit_id
+INNER JOIN tblTOP on tblHt.top_id = tblTOP.top_id
+
+
+
+GO

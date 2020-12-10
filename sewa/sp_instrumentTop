@@ -1,0 +1,17 @@
+CREATE PROC sp_instrumentTop
+@top nvarchar(100)
+AS
+SELECT
+tblInstruments.tag,tblInstruments.device_type
+,CASE WHEN tblInstruments.main_device =1 THEN 'Main Device' ELSE 'Accessory' END AS main_device
+,CASE WHEN tblInstruments.calibration_require = 0 THEN 'N/A'
+ELSE
+CONVERT(NVARCHAR(50),FORMAT(tblInstruments.calibration_date,'dd/MM/yyyy')) END AS calibration_date
+,FORMAT(tblInstruments.installed_date,'dd/MM/yyyy') AS installed_date
+,CASE WHEN tblInstruments.hookup_require = 0 THEN 'N/A'
+ELSE
+CONVERT(NVARCHAR(50),FORMAT(tblInstruments.hookup_date,'dd/MM/yyyy')) END AS hookup_date
+,tblInstruments.[description]
+FROM tblInstruments
+INNER JOIN tblTOP ON tblInstruments.top_id = tblTOP.top_id
+WHERE tblTOP.top_name = @top

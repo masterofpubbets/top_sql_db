@@ -1,0 +1,10 @@
+CREATE PROC sp_signalTop
+@top nvarchar(100)
+AS
+SELECT 
+tblSignals.tag,tblSignals.category,tblSignals.loop_type
+,tblSignals.[owner],tblSignals.cons_responsible,tblSignals.comm_responsible
+,FORMAT(tblSignals.loop_done,'dd/MM/yyyy') AS loop_done
+FROM tblSignals
+INNER JOIN tblTOP ON tblSignals.top_id = tblTOP.top_id
+WHERE tblTOP.top_name = @top
