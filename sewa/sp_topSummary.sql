@@ -25,7 +25,7 @@ END AS [TOTAL % DONE]
 ,[Type],SELECTED,[Division]
 ,tblUnits.unit_name as Unit
 ,[Week Target Date],isPartial
-,[Priority],internal_date as [Internal Date]
+,[Priority],internal_date as [Internal Date],cod as COD
 
 FROM
 (
@@ -64,7 +64,7 @@ SELECT dbo.tblTOP.top_id as [index],[warroom_pri] as [WAR ROOM PRIORITY],[comm_b
 ,tblTOP.[type_name] as [TYPE]
 ,div_name as [Division]
 ,unit_id,week_target as [Week Target Date],isPartial
-,[Priority],internal_date
+,[Priority],internal_date,cod
 
 
 FROM dbo.tblTOP WITH (NOLOCK)
