@@ -1,3 +1,7 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROC [dbo].[sp_LoopSummary]
 AS
 DECLARE @date date
@@ -9,5 +13,7 @@ CASE WHEN tblSignals.category IS NULL THEN 'Total' ELSE tblSignals.category END 
 ,SUM(CASE WHEN tblSignals.loop_done BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS Weekly
 ,COUNT(tblSignals.TAG) - COUNT(tblSignals.loop_done) AS Pending
 FROM tblSignals
+WHERE comm_responsible = 'tr'
 GROUP BY ROLLUP(tblSignals.category)
+
 GO
