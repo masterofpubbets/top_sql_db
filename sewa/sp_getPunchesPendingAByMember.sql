@@ -20,7 +20,9 @@ ID Int,
 [Offical CLosed Date] DATE,
 [Target Date] DATE,
 Issues NVARCHAR(MAX),
-Flag NVARCHAR(100)
+Remarks NVARCHAR(MAX),
+[Top Flag] NVARCHAR(100),
+appCreatedDate DATE
 )
 insert into #tempPunch
 EXEC sp_getPunches
@@ -30,7 +32,7 @@ DECLARE @result as nvarchar(max)
 DECLARE @col as nvarchar(max)
 SELECT @col = STUFF((select  ',' + REPLACE(quotename(x.[Responsible]),'000_000','')
 
-FROM (SELECT DISTINCT CASE WHEN [Responsible] = 'Not Assigned' THEN '000_000Not Assigned' ELSE [Responsible] END AS [Responsible] FROM #tempPunch) as x order by Responsible
+FROM (SELECT DISTINCT CASE WHEN [Responsible] = 'Not Assigned' THEN '000_000Not Assigned' ELSE [Responsible] END AS [Responsible] FROM #tempPunch WHERE [Category] = 'A' AND [Cons. Closed Date] IS NULL) as x order by Responsible
 FOR xml path ('') ,TYPE).value('.' ,'NVARCHAR(MAX)'),1,1,'') 
 
 set @result = '
@@ -54,7 +56,7 @@ set @result = '
             ) AS memberPending
 
             INNER JOIN (
-                            SELECT [Top],MAX(CASE WHEN [Target Date] IS NULL THEN ''1/1/2100'' ELSE [Target Date] END) AS [Target Date],SUM(CASE WHEN [Cons. Closed Date] IS NULL THEN 1 ELSE 0 END) AS [Open Punches]  
+                            SELECT [Top],MAX(CASE WHEN [Target Date] IS NULL AND [Offical CLosed Date] IS NULL AND [Cons. Closed Date] IS NULL THEN ''1/1/2100'' ELSE [Target Date] END) AS [Target Date],SUM(CASE WHEN [Cons. Closed Date] IS NULL THEN 1 ELSE 0 END) AS [Open Punches]  
                             FROM #tempPunch WHERE [Offical CLosed Date] IS NULL AND [Category] =''A'' GROUP BY [Top]
                        ) AS PunchTargetDate
 

@@ -1,11 +1,7 @@
-ALTER PROC sp_getNewpunchAbyMember
+CREATE PROC sp_getNewpunchAbyDiscipline
 AS
 SELECT DISTINCT
 tblPunchDiscipline.punchDisciplineDesc
-,tblMembers.fullName,tblMembers.mail
---,tblPunchDiscipline.punchDisciplineDesc
-,tblPunchCategory.punchCategory
-,COUNT(tblPunchList.punchId) AS openPunches
 FROM tblPunchList 
 INNER JOIN tblMemberDiscipline ON tblPunchList.punchDiscId = tblMemberDiscipline.punchDiscId
 INNER JOIN tblMembers ON tblMemberDiscipline.memberId = tblMembers.memberId

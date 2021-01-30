@@ -1,16 +1,18 @@
-ALTER PROC sp_getNewpunchAbyMember
+CREATE PROC sp_getNewPunchADetails
 AS
 SELECT DISTINCT
 tblPunchDiscipline.punchDisciplineDesc
-,tblMembers.fullName,tblMembers.mail
---,tblPunchDiscipline.punchDisciplineDesc
 ,tblPunchCategory.punchCategory
-,COUNT(tblPunchList.punchId) AS openPunches
+,tblPunchList.punchNo
+,tblMembers.fullName,tblMembers.mail
+,tblTop.top_name
+,FORMAT(tblPunchList.createdDate,'dd/MM/yyyy') AS createdDate
+,tblPunchList.punchDes
 FROM tblPunchList 
 INNER JOIN tblMemberDiscipline ON tblPunchList.punchDiscId = tblMemberDiscipline.punchDiscId
 INNER JOIN tblMembers ON tblMemberDiscipline.memberId = tblMembers.memberId
 INNER JOIN tblPunchDiscipline ON tblPunchList.punchDiscId = tblPunchDiscipline.punchDiscId
 INNER JOIN tblPunchCategory ON tblPunchList.punchCatId = tblPunchCategory.punchCatId
+INNER JOIN tblTop ON tblPunchList.top_Id = tblTop.top_id
 WHERE tblPunchList.mailSended = 0
 AND tblPunchCategory.punchCategory = 'A'
-GROUP BY tblPunchDiscipline.punchDisciplineDesc,tblMembers.fullName,tblMembers.mail,tblPunchCategory.punchCategory

@@ -23,7 +23,7 @@ END AS [TOTAL % DONE]
  WHEN ([Target Date] IS NOT NULL) AND ([Target Date] < getdate()) AND (transfer_date IS NULL) THEN 'Late' 
  ELSE 'Pending' END AS [Status]
 
-,[Type],SELECTED,[Division]
+,[Type],SELECTED AS Flag,[Division]
 ,tblUnits.unit_name as Unit
 ,[Week Target Date]
 ,[Priority],internal_date as [Internal Date],cod as COD

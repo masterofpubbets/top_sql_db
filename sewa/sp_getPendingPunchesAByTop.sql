@@ -13,7 +13,8 @@ tblPunchList.punchId as ID
 ,tblPunchList.internalClosedDate AS [Clear Date],tblPunchList.closedDate AS [Official Closed Date]
 ,tblPunchList.targetDate AS [Target Date]
 ,tblPunchList.Issues
-,tblTop.war_room_selected AS Flag
+,tblPunchList.Remarks
+
 FROM tblPunchList
 INNER JOIN tblPunchDiscipline ON tblPunchList.punchDiscId = tblPunchDiscipline.punchDiscId
 INNER JOIN tblPunchCategory ON tblPunchList.punchCatId = tblPunchCategory.punchCatId

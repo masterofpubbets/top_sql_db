@@ -1,4 +1,4 @@
-CREATE PROC sp_fixPunchTempDataCode
+ALTER PROC sp_fixPunchTempDataCode
 AS
 
 --Discipline
@@ -49,4 +49,20 @@ LEFT JOIN (
 ) AS subcon
 ON REPLACE(tblPunchList_temp.subcon,' ','') = subcon.subconCode + ':' + REPLACE(subcon.subconName,' ','')
 WHERE subcon.subconCode IS NOT NULL
+) AS v
+
+--Members
+UPDATE v
+SET responsible = memberId
+,isResponsibleFixed = 1
+FROM (
+SELECT 
+tblPunchList_temp.responsible,member.fullName,member.memberId
+,tblPunchList_temp.isResponsibleFixed
+FROM tblPunchList_temp
+LEFT JOIN (
+    SELECT tblMembers.memCode,tblMembers.fullName,tblMembers.memberId FROM tblMembers
+) AS member
+ON REPLACE(tblPunchList_temp.responsible,' ','') = REPLACE(member.memCode,' ','')
+WHERE member.memCode IS NOT NULL
 ) AS v
