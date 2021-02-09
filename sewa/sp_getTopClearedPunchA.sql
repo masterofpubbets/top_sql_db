@@ -7,7 +7,10 @@ tblTop.top_name AS [Top],tblTop.subsystem_description AS [Top Description]
 ,COUNT(tblPunchList.punchNo) As [Punch A Count]
 ,MAX(tblPunchList.internalClosedDate) AS [Last Punch Cleared Date]
 ,MIN(tblPunchList.createdDate) AS [First Punch Created Date]
-,MAX(tblPunchList.closedDate) AS [Official Closed Date]
+,CASE WHEN MAX(CASE WHEN tblPunchList.closedDate IS NULL THEN 1 ELSE 0 END) = 0
+        THEN MAX(tblPunchList.closedDate)
+ELSE NULL
+END AS [Official Closed Date]
 ,CASE WHEN 
     MAX(tblPunchList.internalClosedDate) IS NULL THEN DATEDIFF(DAY,MIN(tblPunchList.createdDate),MAX(tblPunchList.closedDate))
 ELSE
