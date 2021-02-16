@@ -5,6 +5,8 @@ SELECT
 tblTop.top_name AS [Top],tblTop.subsystem_description AS [Top Description]
 
 ,COUNT(tblPunchList.punchNo) As [Punch A Count]
+,COUNT(tblPunchList.closedDate) As [Punch A Official Closed Count]
+,COUNT(tblPunchList.punchNo) - COUNT(tblPunchList.closedDate) AS [Pending Punch A To Official Close Count]
 ,MAX(tblPunchList.internalClosedDate) AS [Last Punch Cleared Date]
 ,MIN(tblPunchList.createdDate) AS [First Punch Created Date]
 ,CASE WHEN MAX(CASE WHEN tblPunchList.closedDate IS NULL THEN 1 ELSE 0 END) = 0
