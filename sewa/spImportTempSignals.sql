@@ -1,15 +1,12 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 ALTER PROC [dbo].[spImportTempSignals]
 
 AS
 
-DECLARE si_cursor CURSOR FOR SELECT [top_name],[unit_name],[tag],[category],[sub_category],[loop_type],[cons_responsible],[owner],[comm_responsible],[Service],[plan_date],[remarks] FROM [tblSignals_temp]; 
+DECLARE si_cursor CURSOR FOR SELECT [top_name],[unit_name],actId,[tag],[category],[sub_category],[loop_type],[cons_responsible],[owner],[comm_responsible],[Service],[plan_date],[remarks] FROM [tblSignals_temp]; 
 
 DECLARE @top_name nvarchar(100)
 DECLARE @unit_name nvarchar(50)
+DECLARE @actId nvarchar(50)
 DECLARE @signal_name nvarchar(100)
 DECLARE @category nvarchar(50)
 DECLARE @subCategory nvarchar(50)
@@ -27,7 +24,7 @@ DECLARE @tu nvarchar(50)
 DECLARE @tt nvarchar(50)
 
 OPEN si_cursor;
-FETCH NEXT FROM si_cursor INTO @top_name,@unit_name, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks;
+FETCH NEXT FROM si_cursor INTO @top_name,@unit_name,@actId, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks;
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
 
@@ -55,14 +52,15 @@ BEGIN
 				BEGIN
 					if @id is null
 						BEGIN
-							INSERT INTO [dbo].tblSignals ([top_id],[unit_id],[tag],[category],[sub_category],[loop_type],[cons_responsible],[owner],[comm_responsible],[Service],[plan_date],[remarks])
-							VALUES (@topID,@unitID, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks)
+							INSERT INTO [dbo].tblSignals ([top_id],[unit_id],actId,[tag],[category],[sub_category],[loop_type],[cons_responsible],[owner],[comm_responsible],[Service],[plan_date],[remarks])
+							VALUES (@topID,@unitID,@actId, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks)
 						END
 					ELSE
 						BEGIN
 							UPDATE dbo.tblSignals
 							SET [top_id] = @topId,
 								unit_id = @unitId,
+                                actId = @actId,
 								[category] = @category,
 								[sub_category] = @subCategory,
 								[loop_type] = @loop_type,
@@ -78,7 +76,7 @@ BEGIN
 
 
 
-       FETCH NEXT FROM si_cursor INTO @top_name,@unit_name, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks;
+       FETCH NEXT FROM si_cursor INTO @top_name,@unit_name,@actId, @signal_name,@category,@subCategory,@loop_type,@cons_responsible,@owner,@comm_responsible,@Service,@plan_date,@remarks;
 END;
 CLOSE si_cursor;
 DEALLOCATE si_cursor;

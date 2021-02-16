@@ -14,6 +14,7 @@ CASE WHEN tblSignals.category IS NULL THEN 'Total' ELSE tblSignals.category END 
 ,COUNT(tblSignals.TAG) - COUNT(tblSignals.loop_done) AS Pending
 FROM tblSignals
 WHERE comm_responsible = 'tr'
+AND tblSignals.active=1
 GROUP BY ROLLUP(tblSignals.category)
 
 GO

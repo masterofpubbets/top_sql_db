@@ -1,0 +1,4 @@
+ALTER PROC sp_updateCurrentPunches
+AS
+EXEC sp_updateCurrentPunchesCategory
+EXEC sp_updateCurrentPunchesClosedDate
