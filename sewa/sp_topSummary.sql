@@ -7,8 +7,8 @@ AS
 
 SELECT 
 [index],[WAR ROOM PRIORITY],[COMM BLOCK],[COMMISSIONING PRIROITY],[TOP],[PLAN HO DATE] as [CLIENT/GE BASE LINE DATE]
-,[Target Date],[LATE DATE],walk_through_date as [Walkthrough Date],transfer_date as [Trensfer Date],
-[Subsystem description],[Resp.],
+,[Target Date],[LATE DATE],walk_through_date as [Walkthrough Date],transfer_date as [Trensfer Date],isPartial
+,[Subsystem description],[Resp.],
 [TP SCP],[TP ACT],[TP % COMPLETED],[RST SCP],[RST ACT],[RST % COMPLETED],[EQ SCP],[EQ ACT],[EQ % COMPLETED],[CL SCP],[CL ACT],[CL % COMPLETED],
 [CT SCP],[CT ACT],[CT % COMPLETED],[INS SCP],[INS ACT],[INS % COMPLETED],[HK SCP],[HK ACT],[HK % COMPLETED],[SI SCP],[SI ACT],[SI % COMPLETED],
 Issues,[Responsible]
@@ -24,7 +24,7 @@ END AS [TOTAL % DONE]
 
 ,[Type],SELECTED,[Division]
 ,tblUnits.unit_name as Unit
-,[Week Target Date],isPartial
+,[Week Target Date]
 ,[Priority],internal_date as [Internal Date],cod as COD
 
 FROM
@@ -267,4 +267,5 @@ on dbo.tblTOP.top_id = vItems.top_id
 ) as vItemsAll
 INNER JOIN tblUnits ON vItemsAll.unit_id = tblUnits.unit_id
 ORDER BY vItemsAll.[priority]
+
 GO

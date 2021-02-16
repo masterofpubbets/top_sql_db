@@ -1,4 +1,4 @@
-CREATE PROC sp_dailyTracking
+ALTER PROC sp_dailyTracking
 AS
 declare @col as nvarchar(max)
 declare @colSUM as nvarchar(max)
@@ -782,6 +782,102 @@ UNION ALL
 select ''Scope'' as Daily,
 ''Loop'' as [Activity Name]
 ,count(tag) as ''Scope'',''Loop Test'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+group by unit_id
+--*********************************************************
+UNION ALL
+---TOP Transfer
+select convert(char(10),cast(transfer_date as smalldatetime),111) as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
+group by transfer_date,unit_id
+UNION ALL
+select ''Cummulative'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
+WHERE transfer_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+group by unit_id
+UNION ALL
+select ''Last 1 Weekly'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE transfer_date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by transfer_date,unit_id
+UNION ALL
+select ''Last 2 Weekly'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE transfer_date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by transfer_date,unit_id
+UNION ALL
+select ''Last 3 Weekly'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE transfer_date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by transfer_date,unit_id
+UNION ALL
+select ''Last 4 Weekly'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE transfer_date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by transfer_date,unit_id
+UNION ALL
+select ''Weekly'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE transfer_date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+group by transfer_date,unit_id
+UNION ALL
+select ''Scope'' as Daily,
+''Top Transfer'' as [Activity Name]
+,count(top_name) as ''Scope'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+group by unit_id
+--*********************************************************
+UNION ALL
+---TOP Walk Through
+select convert(char(10),cast(walk_through_date as smalldatetime),111) as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
+group by walk_through_date,unit_id
+UNION ALL
+select ''Cummulative'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
+WHERE walk_through_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+group by unit_id
+UNION ALL
+select ''Last 1 Weekly'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE walk_through_date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by walk_through_date,unit_id
+UNION ALL
+select ''Last 2 Weekly'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE walk_through_date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by walk_through_date,unit_id
+UNION ALL
+select ''Last 3 Weekly'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE walk_through_date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by walk_through_date,unit_id
+UNION ALL
+select ''Last 4 Weekly'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE walk_through_date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by walk_through_date,unit_id
+UNION ALL
+select ''Weekly'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
+WHERE walk_through_date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+group by walk_through_date,unit_id
+UNION ALL
+select ''Scope'' as Daily,
+''Top Walkthrough'' as [Activity Name]
+,count(top_name) as ''Scope'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
 group by unit_id
 --*********************************************************
 --******************************************************************
