@@ -1,16 +1,13 @@
-
 ALTER PROC [dbo].[spImportTempTOPS]
 
 AS
 
-DECLARE top_cursor CURSOR FOR SELECT [unit_name],[top_name],[div_name],[system_name],[kks],[system_description],[subsystem_description],[res],[plan_ho_date],late_start_date,[supervisor],[warroom_pri],[comm_block],[comm_pri],[discipline],cod,[remarks] FROM [dbo].[tblTOP_temp]; 
+DECLARE top_cursor CURSOR FOR SELECT [unit_name],[top_name],[div_name],[system_name],[subsystem_description],[res],[plan_ho_date],late_start_date,[supervisor],[warroom_pri],[comm_block],[comm_pri],[discipline],cod,[remarks] FROM [dbo].[tblTOP_temp]; 
 
 DECLARE @unit_name nvarchar(50)
 DECLARE @top_name nvarchar(100)
 DECLARE @div_name nvarchar(100)
 DECLARE @system_name nvarchar(50)
-DECLARE @kks nvarchar(50)
-DECLARE @system_description nvarchar(255)
 DECLARE @subsystem_description nvarchar(255)
 DECLARE @res nvarchar(50)
 DECLARE @plan_ho_date date
@@ -24,9 +21,10 @@ DECLARE @cod nvarchar(50)
 DECLARE @remarks nvarchar(255)
 DECLARE @id int
 DECLARE @unitId int
+DECLARE @sysId INT
 
 OPEN top_cursor;
-FETCH NEXT FROM top_cursor INTO @unit_name, @top_name, @div_name,@system_name,@kks,@system_description,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks;
+FETCH NEXT FROM top_cursor INTO @unit_name, @top_name, @div_name,@system_name,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks;
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
 		
@@ -34,6 +32,7 @@ BEGIN
 		SELECT @unitId = null
        SELECT @id = top_id from [dbo].[tblTOP] where top_name = @top_name
 	   SELECT @unitId = unit_id from dbo.tblUnits where unit_name = @unit_name
+       SELECT @sysId = tblSystems.sysId FROM tblSystems WHERE systemName = @system_name
 
 	   if @unitId is null
 			BEGIN
@@ -45,39 +44,48 @@ BEGIN
 			END
 		ELSE
 			BEGIN
-				   if @id is null
-						BEGIN
-							INSERT INTO [dbo].[tblTOP] ([unit_id],[top_name],[div_name],[system_name],[kks],[system_description],[subsystem_description],[res],[plan_ho_date],[late_start_date],[supervisor],[warroom_pri],[comm_block],[comm_pri],[discipline],cod,[remarks])
-							VALUES (@unitId, @top_name, @div_name,@system_name,@kks,@system_description,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks)
-						END
-					ELSE
-						BEGIN
-							UPDATE [dbo].[tblTOP]
-							SET [unit_id] = @unitId,
-								[div_name] = @div_name,
-								[system_name] = @system_name,
-								[kks] = @kks,
-								[system_description] = @system_description,
-								[subsystem_description] = @subsystem_description,
-								[res] = @res,
-								[plan_ho_date] = @plan_ho_date,
-								[late_start_date] = @late_start_date,
-								[supervisor] = @supervisor,
-								[warroom_pri] = @warroom_pri,
-								[comm_block] = @comm_block,
-								[comm_pri] = @comm_pri,
-								[discipline] = @discipline,
-                                cod = @cod,
-								[remarks] = @remarks
-							WHERE [top_name] = @top_name
-						END
+                IF @sysId is null
+			    BEGIN
+				    select @tu = 'Invalid System: ' + @system_name
+				    select @tt = 'Add or Edit TOP: ' + @top_name
+				    EXEC sp_addLog @tu,@tt
+			    END
+                ELSE
+                    BEGIN
+
+				        IF @id is null
+						    BEGIN
+							    INSERT INTO [dbo].[tblTOP] ([unit_id],[top_name],[div_name],[systemId],[subsystem_description],[res],[plan_ho_date],[late_start_date],[supervisor],[warroom_pri],[comm_block],[comm_pri],[discipline],cod,[remarks])
+							    VALUES (@unitId, @top_name, @div_name,@sysId,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks)
+						    END
+					    ELSE
+						    BEGIN
+							    UPDATE [dbo].[tblTOP]
+							    SET [unit_id] = @unitId,
+								    [div_name] = @div_name,
+								    systemId = @sysId,
+								    [subsystem_description] = @subsystem_description,
+								    [res] = @res,
+								    [plan_ho_date] = @plan_ho_date,
+								    [late_start_date] = @late_start_date,
+								    [supervisor] = @supervisor,
+								    [warroom_pri] = @warroom_pri,
+								    [comm_block] = @comm_block,
+								    [comm_pri] = @comm_pri,
+								    [discipline] = @discipline,
+                                    cod = @cod,
+								    [remarks] = @remarks
+							    WHERE [top_name] = @top_name
+						    END
+                    END
 			END
 
 
-       FETCH NEXT FROM top_cursor INTO @unit_name, @top_name, @div_name,@system_name,@kks,@system_description,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks;
+       FETCH NEXT FROM top_cursor INTO @unit_name, @top_name, @div_name,@system_name,@subsystem_description,@res,@plan_ho_date,@late_start_date,@supervisor,@warroom_pri,@comm_block,@comm_pri,@discipline,@cod,@remarks;
 END;
 CLOSE top_cursor;
 DEALLOCATE top_cursor;
+
 
 
 GO
