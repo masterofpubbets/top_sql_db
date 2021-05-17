@@ -66,3 +66,19 @@ LEFT JOIN (
 ON REPLACE(tblPunchList_temp.responsible,' ','') = REPLACE(member.memCode,' ','')
 WHERE member.memCode IS NOT NULL
 ) AS v
+
+--Raised By
+UPDATE v
+SET raisedBy = memberId
+,isRaisedByFixed = 1
+FROM (
+SELECT 
+tblPunchList_temp.raisedBy,member.fullName,member.memberId
+,tblPunchList_temp.isRaisedByFixed
+FROM tblPunchList_temp
+LEFT JOIN (
+    SELECT tblMembers.memCode,tblMembers.fullName,tblMembers.memberId FROM tblMembers
+) AS member
+ON REPLACE(REPLACE(tblPunchList_temp.raisedBy,' ',''),'.','') = REPLACE(REPLACE(member.memCode,' ',''),'.','')
+WHERE member.memCode IS NOT NULL
+) AS v

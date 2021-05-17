@@ -32,3 +32,14 @@ LEFT JOIN (
 ) AS subcon
 ON REPLACE(tblPunchList_temp.subcon,' ','') = subcon.subconCode + ':' + REPLACE(subcon.subconName,' ','')
 WHERE subcon.subconCode IS NULL AND tblPunchList_temp.isSubconFixed = 0
+UNION ALL
+--Raised By
+SELECT 
+'Unknown Originator' as Error
+,tblPunchList_temp.*
+FROM tblPunchList_temp
+LEFT JOIN (
+    SELECT tblMembers.memCode,tblMembers.fullName FROM tblMembers
+) AS members
+ON REPLACE(REPLACE(tblPunchList_temp.raisedBy,' ',''),'.','') = REPLACE(REPLACE(members.memCode,' ',''),'.','')
+WHERE members.memCode IS NULL AND tblPunchList_temp.isRaisedByFixed = 0

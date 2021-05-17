@@ -2,7 +2,7 @@ ALTER PROC [dbo].[spImportTempCables]
 
 AS
 
-DECLARE cable_cursor CURSOR FOR SELECT [top_name],[unit_name],sequenceNumber,[pulling_actid],[con_actid],[status],[discipline],[cable_type],[tag],[code],[description],[service_level],[from_eq],[from_decription],[to_eq],[to_description],[pulling_area_from],[pulling_area_to],[wiring_diagram],[wd_sheet],[wd_rev],[routing_status],[routing_rev],[drum],[design_length],[batch_no],[team],[remarks] from dbo.tblCables_temp; 
+DECLARE cable_cursor CURSOR FOR SELECT [top_name],[unit_name],sequenceNumber,[pulling_actid],[con_actid],[status],[discipline],[cable_type],[tag],[code],[description],[service_level],[from_eq],[from_decription],[to_eq],[to_description],[pulling_area_from],[pulling_area_to],[wiring_diagram],[wd_sheet],[wd_rev],[routing_status],[routing_rev],[drum],[design_length],[batch_no],[team],[remarks],active from dbo.tblCables_temp; 
 
 DECLARE @top_name nvarchar(100)
 DECLARE @unit_name nvarchar(50)
@@ -31,6 +31,7 @@ DECLARE @drum nvarchar(255)
 DECLARE @design_length float
 DECLARE @batch_no int
 DECLARE @team nvarchar(50)
+DECLARE @active BIT
 DECLARE @remarks nvarchar(255)
 
 DECLARE @id int
@@ -38,9 +39,10 @@ DECLARE @unitId int
 DECLARE @topId int
 DECLARE @tu nvarchar(50)
 DECLARE @tt nvarchar(50)
+DECLARE @drumId int
 
 OPEN cable_cursor;
-FETCH NEXT FROM cable_cursor INTO @top_name,@unit_name,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@drum,@design_length,@batch_no,@team,@remarks;
+FETCH NEXT FROM cable_cursor INTO @top_name,@unit_name,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@drum,@design_length,@batch_no,@team,@remarks,@active;
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
 
@@ -50,6 +52,7 @@ BEGIN
        SELECT @id = cable_id from [dbo].tblCables where tag = @tag
 	   SELECT @unitId = unit_id from dbo.tblUnits where unit_name = @unit_name
 	   SELECT @topId = top_id from dbo.tblTOP where top_name = @top_name
+	   SELECT @drumId = tblDrums.drumId FROM tblDrums WHERE tag = @drum
 
 	   if @unitId is null
 			BEGIN
@@ -69,8 +72,8 @@ BEGIN
 					BEGIN
 						if @id is null
 							BEGIN
-								INSERT INTO [dbo].tblCables ([top_id],[unit_id],sequenceNumber,[pulling_actid],[con_actid],[status],[discipline],[cable_type],[tag],[code],[description],[service_level],[from_eq],[from_decription],[to_eq],[to_description],[pulling_area_from],[pulling_area_to],[wiring_diagram],[wd_sheet],[wd_rev],[routing_status],[routing_rev],[drum],[design_length],[batch_no],[team],[remarks])
-								VALUES (@topId,@unitId,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@drum,@design_length,@batch_no,@team,@remarks)
+								INSERT INTO [dbo].tblCables ([top_id],[unit_id],sequenceNumber,[pulling_actid],[con_actid],[status],[discipline],[cable_type],[tag],[code],[description],[service_level],[from_eq],[from_decription],[to_eq],[to_description],[pulling_area_from],[pulling_area_to],[wiring_diagram],[wd_sheet],[wd_rev],[routing_status],[routing_rev],[design_length],[batch_no],[team],[remarks],active,drumId)
+								VALUES (@topId,@unitId,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@design_length,@batch_no,@team,@remarks,@active,@drumId)
 							END
 						ELSE
 							BEGIN
@@ -97,11 +100,12 @@ BEGIN
 									[wd_rev] = @wd_rev,
 									[routing_status] = @routing_status,
 									[routing_rev] = @routing_rev,
-									[drum] = @drum,
+									[drumId] = @drumId,
 									[design_length] = @design_length,
 									[batch_no] = @batch_no,
 									[team] = @team,
-									[remarks] = @remarks
+									[remarks] = @remarks,
+									active = @active
 								WHERE tag = @tag
 							END
 					END
@@ -109,7 +113,7 @@ BEGIN
 			
 
 
-       FETCH NEXT FROM cable_cursor INTO @top_name,@unit_name,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@drum,@design_length,@batch_no,@team,@remarks;
+       FETCH NEXT FROM cable_cursor INTO @top_name,@unit_name,@sequenceNumber,@pulling_actid,@con_actid,@status,@discipline,@cable_type,@tag,@code,@description,@service_level,@from_eq,@from_decription,@to_eq,@to_description,@pulling_area_from,@pulling_area_to,@wiring_diagram,@wd_sheet,@wd_rev,@routing_status,@routing_rev,@drum,@design_length,@batch_no,@team,@remarks,@active;
 END;
 CLOSE cable_cursor;
 DEALLOCATE cable_cursor;

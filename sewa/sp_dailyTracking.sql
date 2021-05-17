@@ -1,4 +1,4 @@
-ALTER PROC sp_dailyTracking
+ALTER PROC [dbo].[sp_dailyTracking]
 AS
 declare @col as nvarchar(max)
 declare @colSUM as nvarchar(max)
@@ -70,47 +70,55 @@ select convert(char(10),cast([Pulled_Date] as smalldatetime),111) as Daily,
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],[unit_id] as unit_id 
 FROM tblCables
 where [Pulled_Date] is not null
+AND active=1
 group by [discipline],[Pulled_Date],unit_id
 UNION ALL
 select ''Cummulative'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where Pulled_Date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1) 
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Last 1 Weekly'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where [Pulled_Date] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Last 2 Weekly'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where [Pulled_Date] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Last 3 Weekly'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where [Pulled_Date] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Last 4 Weekly'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where [Pulled_Date] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Weekly'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id 
 FROM tblCables
 where [Pulled_Date] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by [discipline],unit_id
 UNION ALL
 select ''Scope'' as Daily,''Cable Pulling - '' + [discipline] as [Activity Name]
 ,sum([design_length]) as ''Pulled'',''Cable'' as [Category],''Pulling'' AS [Subcategory],''Pulling '' + [discipline] AS [Type],''LM'' as [Unit],unit_id as unit_id FROM 
 tblCables
+WHERE active=1
 group by [discipline],unit_id
 --******************************************************************
 UNION ALL
@@ -121,6 +129,7 @@ select convert(char(10),cast([Conn_Date] as smalldatetime),111) as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -132,6 +141,7 @@ select ''Cummulative'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -143,6 +153,7 @@ select ''Last 1 Weekly'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -154,6 +165,7 @@ select ''Last 2 Weekly'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -165,6 +177,7 @@ select ''Last 3 Weekly'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -176,6 +189,7 @@ select ''Last 4 Weekly'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -187,6 +201,7 @@ select ''Weekly'' as Daily,
 (select con_from_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_from_date] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by con_from_date,[unit_id],discipline
 )
 as vELECon1
@@ -196,6 +211,7 @@ select ''Scope'' as Daily,
 ''Cable Connection From - '' + discipline as [Activity Name]
 ,count([tag]) as ''Conn'',''Cable'' as [Category],''Connection'' AS [Subcategory],''Connections '' + [discipline] AS [Type],''Each'' as [Unit],[unit_id] as unit_id 
 FROM tblCables
+WHERE active=1
 group by [unit_id],discipline
 --*********************************************************************************
 UNION ALL
@@ -206,6 +222,7 @@ select convert(char(10),cast([Conn_Date] as smalldatetime),111) as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] is not null
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -217,6 +234,7 @@ select ''Cummulative'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -228,6 +246,7 @@ select ''Last 1 Weekly'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -239,6 +258,7 @@ select ''Last 2 Weekly'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -250,6 +270,7 @@ select ''Last 3 Weekly'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -261,6 +282,7 @@ select ''Last 4 Weekly'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -272,6 +294,7 @@ select ''Weekly'' as Daily,
 (select con_to_date as [Conn_Date]
 ,count([tag]) as [EC_Conn1] ,[unit_id],discipline
 FROM tblCables where [con_to_date] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+AND active=1
 group by con_to_date,[unit_id],discipline
 )
 as vELECon1
@@ -281,6 +304,7 @@ select ''Scope'' as Daily,
 ''Cable Connection To - '' + discipline as [Activity Name]
 ,count([tag]) as ''Conn'',''Cable'' as [Category],''Connection'' AS [Subcategory],''Connections '' + [discipline] AS [Type],''Each'' as [Unit],[unit_id] as unit_id 
 FROM tblCables
+WHERE active=1
 group by [unit_id],discipline
 --*********************************************************************************
 UNION ALL
@@ -484,6 +508,7 @@ select convert(char(10),cast([installed_date] as smalldatetime),111) as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and installed_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -493,6 +518,7 @@ select ''Cummulative'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and installed_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -502,6 +528,7 @@ select ''Last 1 Weekly'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and [installed_date] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -511,6 +538,7 @@ select ''Last 2 Weekly'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and [installed_date] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -520,6 +548,7 @@ select ''Last 3 Weekly'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and [installed_date] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -529,6 +558,7 @@ select ''Last 4 Weekly'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and [installed_date] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -538,6 +568,7 @@ select ''Weekly'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 and [installed_date] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -547,6 +578,7 @@ select ''Scope'' as Daily,
 ''Instrument Installation - Mechanical'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Mechanical''
 group by unit_id
@@ -557,6 +589,7 @@ select convert(char(10),cast([installed_date] as smalldatetime),111) as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and installed_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -566,6 +599,7 @@ select ''Cummulative'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and installed_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -575,6 +609,7 @@ select ''Last 1 Weekly'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and [installed_date] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -584,6 +619,7 @@ select ''Last 2 Weekly'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and [installed_date] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -593,6 +629,7 @@ select ''Last 3 Weekly'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and [installed_date] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -602,6 +639,7 @@ select ''Last 4 Weekly'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and [installed_date] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
@@ -611,6 +649,7 @@ select ''Weekly'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 and [installed_date] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
@@ -620,6 +659,7 @@ select ''Scope'' as Daily,
 ''Instrument Installation - Electronic'' as [Activity Name]
 ,count([tag]) as ''Installed Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Installation'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where main_device = 1
+AND active = 1
 AND Installation_scope LIKE ''TR%''
 AND device_type = ''Electronic''
 group by unit_id
@@ -630,6 +670,7 @@ select convert(char(10),cast(HookUp_Date as smalldatetime),111) as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments
 WHERE hookup_require = 1
+AND active = 1
 group by unit_id,hookup_date
 UNION ALL
 select ''Cummulative'' as Daily,
@@ -637,12 +678,14 @@ select ''Cummulative'' as Daily,
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where HookUp_Date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
 and hookup_require = 1
+AND active = 1
 group by unit_id
 UNION ALL
 select ''Last 1 Weekly'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 and hookup_date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -650,6 +693,7 @@ select ''Last 2 Weekly'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 and hookup_date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -657,6 +701,7 @@ select ''Last 3 Weekly'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 and hookup_date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -664,6 +709,7 @@ select ''Last 4 Weekly'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 and hookup_date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -671,6 +717,7 @@ select ''Weekly'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([HookUp_Date]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 and hookup_date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
 group by unit_id
 UNION ALL
@@ -678,6 +725,7 @@ select ''Scope'' as Daily,
 ''Hook Ups'' as [Activity Name]
 ,count([tag]) as ''Hookup Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Hookups'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where hookup_require = 1
+AND active = 1
 group by unit_id
 --*********************************************************
 UNION ALL
@@ -686,12 +734,14 @@ select convert(char(10),cast(Calibration_Date as smalldatetime),111) as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 group by unit_id,Calibration_Date
 UNION ALL
 select ''Cummulative'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
 group by unit_id
 UNION ALL
@@ -699,6 +749,7 @@ select ''Last 1 Weekly'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -706,6 +757,7 @@ select ''Last 2 Weekly'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -713,6 +765,7 @@ select ''Last 3 Weekly'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -720,6 +773,7 @@ select ''Last 4 Weekly'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
 group by unit_id
 UNION ALL
@@ -727,6 +781,7 @@ select ''Weekly'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([Calibration_Date]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 and Calibration_Date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
 group by unit_id
 UNION ALL
@@ -734,152 +789,116 @@ select ''Scope'' as Daily,
 ''Calibration'' as [Activity Name]
 ,count([tag]) as ''Calibration Count'',''Instrumentation'' as [Category],''Instrument'' AS [Subcategory],''Calibration'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblInstruments 
 where Calibration_require = 1
+AND active = 1
 group by unit_id
 --*********************************************************
 UNION ALL
 ---Loop
 select convert(char(10),cast(loop_done as smalldatetime),111) as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblSignals where comm_responsible = ''TR''
-group by loop_done,unit_id
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblSignals where comm_responsible = ''TR''
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Cummulative'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as unit_id FROM tblSignals where comm_responsible = ''TR''
 and loop_done <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by unit_id
+AND tblSignals.active=1
+group by unit_id,[category]
 UNION ALL
 select ''Last 1 Weekly'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
 and loop_done between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by loop_done,unit_id
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Last 2 Weekly'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
 and loop_done between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by loop_done,unit_id
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Last 3 Weekly'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
 and loop_done between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by loop_done,unit_id
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Last 4 Weekly'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
 and loop_done between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by loop_done,unit_id
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Weekly'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count([loop_done]) as ''Installed Count'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+,count([loop_done]) as ''Installed Count'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
 and loop_done between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by loop_done,unit_id
+AND tblSignals.active=1
+group by loop_done,unit_id,[category]
 UNION ALL
 select ''Scope'' as Daily,
 ''Loop Test'' as [Activity Name]
-,count(tag) as ''Scope'',''Loop'' as [Category],''Loop'' AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
-group by unit_id
+,count(tag) as ''Scope'',''Signal Test'' as [Category],[category] AS [Subcategory],''Test'' AS [Type],''Each'' as [Unit],unit_id as ActID FROM tblSignals where comm_responsible = ''TR''
+AND tblSignals.active=1
+group by unit_id,[category]
 --*********************************************************
 UNION ALL
----TOP Transfer
-select convert(char(10),cast(transfer_date as smalldatetime),111) as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
-group by transfer_date,unit_id
+--Commissioning Tasks
+select convert(char(10),cast([doneDate] as smalldatetime),111) as Daily,
+[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],[unitId] as unitId 
+FROM tblCommTasks
+where [doneDate] is not null
+group by [className],[doneDate],unitId,[sheetDescription],phase
 UNION ALL
-select ''Cummulative'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
-WHERE transfer_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by unit_id
+select ''Cummulative'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where doneDate <= (select [cutoffDate] FROM [tblOptions] WHERE id=1) 
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Last 1 Weekly'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE transfer_date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by transfer_date,unit_id
+select ''Last 1 Weekly'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where [doneDate] between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Last 2 Weekly'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE transfer_date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by transfer_date,unit_id
+select ''Last 2 Weekly'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where [doneDate] between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Last 3 Weekly'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE transfer_date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by transfer_date,unit_id
+select ''Last 3 Weekly'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where [doneDate] between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Last 4 Weekly'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE transfer_date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by transfer_date,unit_id
+select ''Last 4 Weekly'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where [doneDate] between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Weekly'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count([transfer_date]) as ''Transfer Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE transfer_date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by transfer_date,unit_id
+select ''Weekly'' as Daily,[className] as [Activity Name]
+,COUNT(doneDate) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId 
+FROM tblCommTasks
+where [doneDate] between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
+group by [className],unitId,[sheetDescription],phase
 UNION ALL
-select ''Scope'' as Daily,
-''Top Transfer'' as [Activity Name]
-,count(top_name) as ''Scope'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-group by unit_id
---*********************************************************
-UNION ALL
----TOP Walk Through
-select convert(char(10),cast(walk_through_date as smalldatetime),111) as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
-group by walk_through_date,unit_id
-UNION ALL
-select ''Cummulative'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as unit_id FROM tbltop
-WHERE walk_through_date <= (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by unit_id
-UNION ALL
-select ''Last 1 Weekly'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE walk_through_date between dateadd(d,-13,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by walk_through_date,unit_id
-UNION ALL
-select ''Last 2 Weekly'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE walk_through_date between dateadd(d,-13-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-7,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by walk_through_date,unit_id
-UNION ALL
-select ''Last 3 Weekly'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE walk_through_date between dateadd(d,-13-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-14,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by walk_through_date,unit_id
-UNION ALL
-select ''Last 4 Weekly'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE walk_through_date between dateadd(d,-13-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and dateadd(d,-7-21,(select [cutoffDate] FROM [tblOptions] WHERE id=1))
-group by walk_through_date,unit_id
-UNION ALL
-select ''Weekly'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count([walk_through_date]) as ''Walkthrough Count'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-WHERE walk_through_date between dateadd(d,-6,(select [cutoffDate] FROM [tblOptions] WHERE id=1)) and (select [cutoffDate] FROM [tblOptions] WHERE id=1)
-group by walk_through_date,unit_id
-UNION ALL
-select ''Scope'' as Daily,
-''Top Walkthrough'' as [Activity Name]
-,count(top_name) as ''Scope'',''Top'' as [Type],''Each'' as [Unit],unit_id as ActID FROM tbltop
-group by unit_id
---*********************************************************
+select ''Scope'' as Daily,[className] as [Activity Name]
+,COUNT(comTaskId) as ''Pulled'',[phase] as [Category],[className] AS [Subcategory],[sheetDescription] AS [Type],''EACH'' as [Unit],unitId as unitId FROM 
+tblCommTasks
+group by [className],unitId,[sheetDescription],phase
+--******************************************************************
+
 --******************************************************************
 ) as X
 
@@ -893,3 +912,4 @@ group by tblUnits.unit_name,x2.[Category],[Subcategory],x2.[Type],UOM
 '
 
 EXECUTE (@result)
+GO

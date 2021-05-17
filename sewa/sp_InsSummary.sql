@@ -29,6 +29,7 @@ FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
 WHERE tblInstruments.main_device = 1 AND Installation_scope <> 'Vendor'
 AND tblunits.unit_name in ('00','10')
+AND tblInstruments.active=1
 GROUP BY tblunits.unit_name,tblInstruments.device_type
 
 ) as vDet
@@ -59,6 +60,7 @@ FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
 WHERE tblInstruments.main_device = 1 AND Installation_scope <> 'Vendor'
 AND tblunits.unit_name in ('00','10')
+AND tblInstruments.active=1
 GROUP BY tblInstruments.device_type
 
 ) as vDet

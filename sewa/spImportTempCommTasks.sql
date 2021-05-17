@@ -1,8 +1,8 @@
-CREATE PROC [dbo].[spImportTempCommTasks]
+ALTER PROC [dbo].[spImportTempCommTasks]
 
 AS
 
-DECLARE cable_cursor CURSOR FOR SELECT [discipline], [systemKKS], [unitName], [topName], [typeName], [className], [sheetDescription], [reportNumber], itemKKS, itemDescription
+DECLARE cable_cursor CURSOR FOR SELECT phase,[discipline], [systemKKS], [unitName], [topName], [typeName], [className], [sheetDescription], [reportNumber], itemKKS, itemDescription
 FROM [tblCommTasks_temp]
 
 DECLARE @discipline NVARCHAR(50)
@@ -10,6 +10,7 @@ DECLARE @systemKKS NVARCHAR(50)
 DECLARE @unitName NVARCHAR(50)
 DECLARE @topName NVARCHAR(100)
 DECLARE @typeName NVARCHAR(50)
+DECLARE @phase NVARCHAR(50)
 DECLARE @className NVARCHAR(50)
 DECLARE @sheetDescription NVARCHAR(100)
 DECLARE @reportNumber NVARCHAR(250)
@@ -26,7 +27,7 @@ DECLARE @tt NVARCHAR(50)
 DECLARE @td NVARCHAR(50)
 
 OPEN cable_cursor;
-FETCH NEXT FROM cable_cursor INTO @discipline,@systemKKS,@unitName,@topName,@typeName,@className,@sheetDescription,@reportNumber,@itemKKS,@itemDescription;
+FETCH NEXT FROM cable_cursor INTO @phase,@discipline,@systemKKS,@unitName,@topName,@typeName,@className,@sheetDescription,@reportNumber,@itemKKS,@itemDescription;
 WHILE @@FETCH_STATUS = 0  
 BEGIN
 
@@ -72,17 +73,39 @@ BEGIN
 							END
 						ELSE
 							BEGIN
-								INSERT INTO [dbo].tblCommTasks
-									([disciplineId],[systemId],unitId,[topId],[typeName],[className],[sheetDescription],[reportNumber],[itemKKS],[itemDescription])
-								VALUES
-									(@disciplineId, @sysId, @unitId, @topId, @typeName, @className, @sheetDescription, @reportNumber, @itemKKS, @itemDescription)
+								DECLARE @commTaskID INT
+								SELECT @commTaskID = NULL
+								SELECT @commTaskID = tblCommTasks.comTaskId FROM tblCommTasks WHERE tblCommTasks.disciplineId = @disciplineId
+													AND tblCommTasks.itemKKS = @itemKKS AND tblCommTasks.sheetDescription = @sheetDescription
+								IF @commTaskID IS NULL
+									BEGIN
+										INSERT INTO [dbo].tblCommTasks
+											(phase,[disciplineId],[systemId],unitId,[topId],[typeName],[className],[sheetDescription],[reportNumber],[itemKKS],[itemDescription])
+										VALUES
+											(@phase,@disciplineId, @sysId, @unitId, @topId, @typeName, @className, @sheetDescription, @reportNumber, @itemKKS, @itemDescription)
+									END
+								ELSE
+									BEGIN
+										UPDATE tblCommTasks
+											SET disciplineId = @disciplineId,
+											phase = @phase,
+											systemId = @sysId,
+											unitId = @unitId,
+											topId = @topId,
+											typeName = @typeName,
+											className = @className,
+											sheetDescription = @sheetDescription,
+											reportNumber = @reportNumber,
+											itemDescription = @itemDescription
+										WHERE comTaskId = @commTaskID
+									END
 							END
 				END
 		END
 
 
 
-FETCH NEXT FROM cable_cursor INTO  @discipline,@systemKKS,@unitName,@topName,@typeName,@className,@sheetDescription,@reportNumber,@itemKKS,@itemDescription;
+FETCH NEXT FROM cable_cursor INTO  @phase,@discipline,@systemKKS,@unitName,@topName,@typeName,@className,@sheetDescription,@reportNumber,@itemKKS,@itemDescription;
 END;
 CLOSE cable_cursor;
 DEALLOCATE cable_cursor;

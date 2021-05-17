@@ -35,6 +35,7 @@ FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
 WHERE tblunits.unit_name in ('00','10')
 AND [hookup_require]=1
+AND tblInstruments.active=1
 GROUP BY tblunits.unit_name,hookup_type
 ) as vDet
 GROUP BY ROLLUP(UNIT,hookup_type)
@@ -68,6 +69,7 @@ FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
 WHERE tblunits.unit_name in ('00','10')
 AND [hookup_require]=1
+AND tblInstruments.active=1
 GROUP BY hookup_type
 ) as vDet
 GROUP BY ROLLUP(hookup_type)

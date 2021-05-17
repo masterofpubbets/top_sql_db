@@ -1,4 +1,4 @@
-CREATE PROC [dbo].[sp_cableConnWeekProgress]
+ALTER PROC [dbo].[sp_cableConnWeekProgress]
 AS
 If(OBJECT_ID('tempdb..#temp_cableConnecting') Is Not Null)
 Begin
@@ -77,6 +77,7 @@ SELECT
 FROM cteDate
     LEFT JOIN tblCables ON (tblCables.con_from_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt))
 WHERE cteDate.dtName in( 'Friday')
+AND tblCables.active=1
 OPTION(MAXRECURSION 0);
 
 WITH

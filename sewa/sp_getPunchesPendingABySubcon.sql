@@ -15,14 +15,19 @@ ID Int,
 [Discipline] NVARCHAR(50),
 [Subcontractor] NVARCHAR(100),
 [Responsible] NVARCHAR(100),
+[Responsible Title] NVARCHAR(250),
+[Outage] NVARCHAR(100),
 [Created On] DATE,
+[Raised By] NVARCHAR(100),
+[Raised By Title] NVARCHAR(250),
 [Cons. Closed Date] DATE,
 [Offical CLosed Date] DATE,
 [Target Date] DATE,
 Issues NVARCHAR(MAX),
 Remarks NVARCHAR(MAX),
 [Top Flag] NVARCHAR(100),
-appCreatedDate DATE
+appCreatedDate DATE,
+Topic NVARCHAR(255)
 )
 insert into #tempPunch
 EXEC sp_getPunches
@@ -32,7 +37,7 @@ DECLARE @result as nvarchar(max)
 DECLARE @col as nvarchar(max)
 SELECT @col = STUFF((select  ',' + quotename(x.[Subcontractor])
 
-FROM (SELECT DISTINCT [Subcontractor]  FROM #tempPunch WHERE [Category] = 'A' AND [Cons. Closed Date] IS NULL) as x order by [Subcontractor]
+FROM (SELECT DISTINCT [Subcontractor]  FROM #tempPunch WHERE [Category] = 'A' AND [Cons. Closed Date] IS NULL AND [Offical CLosed Date] IS NULL) as x order by [Subcontractor]
 FOR xml path ('') ,TYPE).value('.' ,'NVARCHAR(MAX)'),1,1,'') 
 
 set @result = '

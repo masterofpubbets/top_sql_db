@@ -50,6 +50,7 @@ cteDate.dt, cteDate.dtName
 FROM cteDate
 LEFT JOIN tblCables ON tblCables.pulled_date BETWEEN DATEADD(day,-6,CONVERT(date,cteDate.dt)) AND CONVERT(date,cteDate.dt)
 WHERE cteDate.dtName in( 'Friday')
+AND tblCables.active=1
 OPTION(MAXRECURSION 0)
 
 

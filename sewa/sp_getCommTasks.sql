@@ -2,6 +2,7 @@ ALTER PROC sp_getCommTasks
 AS
 SELECT
 tblCommTasks.comTaskId AS [ID]
+,tblCommTasks.phase AS Phase
 ,tblUnits.unit_name AS [Unit],tblSystems.systemKKS AS [System KKS],tblSystems.systemDescription AS [System Description]
 ,tblTop.top_name AS [TOP]
 ,tblCommTasks.itemKKS AS [Item KKS],tblCommTasks.itemDescription AS [Item Description]
@@ -9,6 +10,8 @@ tblCommTasks.comTaskId AS [ID]
 ,tblCommTasks.sheetDescription AS [Sheet Description]
 ,tblCommTasks.reportNumber AS [Report Number]
 ,tblCommTasks.doneDate AS [Done Date]
+,tblCommTasks.clientDate AS [Client Date],tblCommTasks.constraints AS [Constraint],tblCommTasks.constResponsible AS [Constraint Responsible]
+,tblCommTasks.systemOwner AS [System Owner]
 FROM tblCommTasks
 INNER JOIN tblUnits ON tblCommTasks.unitId = tblUnits.unit_id
 INNER JOIN tblSystems ON tblCommTasks.systemId = tblSystems.sysId
