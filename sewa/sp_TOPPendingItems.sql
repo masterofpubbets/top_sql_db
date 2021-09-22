@@ -354,6 +354,18 @@ FROM [dbo].[tblSignals] WITH (NOLOCK)
 where loop_done is null
 
 ---------------------------------------------------------------------------------------------------------
+UNION ALL
+
+SELECT 'Punch A' as Discipline
+,[top_id]
+,[punchNo] as Item
+,punchDes as [Item Description]
+FROM [dbo].[tblPunchList] WITH (NOLOCK)
+INNER JOIN tblPunchCategory ON tblPunchList.punchCatId = tblPunchCategory.punchCatId
+WHERE tblPunchCategory.punchCategory = 'A'
+AND tblPunchList.closedDate IS NULL AND tblPunchList.internalClosedDate IS NULL
+
+-----------------------------------------------------------------------------------------------------------
 
 ) as vAllDetails
 

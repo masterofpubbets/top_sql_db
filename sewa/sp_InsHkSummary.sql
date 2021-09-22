@@ -33,7 +33,7 @@ tblunits.unit_name as Unit
 ,SUM(CASE WHEN tblInstruments.hookup_date BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS [Hookup Weekly]
 FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
-WHERE tblunits.unit_name in ('00','10')
+WHERE tblunits.unit_name in ('00','10','20')
 AND [hookup_require]=1
 AND tblInstruments.active=1
 GROUP BY tblunits.unit_name,hookup_type
@@ -67,7 +67,7 @@ tblInstruments.hookup_type
 ,SUM(CASE WHEN tblInstruments.hookup_date BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS [Hookup Weekly]
 FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
-WHERE tblunits.unit_name in ('00','10')
+WHERE tblunits.unit_name in ('00','10','20')
 AND [hookup_require]=1
 AND tblInstruments.active=1
 GROUP BY hookup_type

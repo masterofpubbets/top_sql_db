@@ -10,10 +10,14 @@ tblCommTasks.comTaskId AS [ID]
 ,tblCommTasks.sheetDescription AS [Sheet Description]
 ,tblCommTasks.reportNumber AS [Report Number]
 ,tblCommTasks.doneDate AS [Done Date]
-,tblCommTasks.clientDate AS [Client Date],tblCommTasks.constraints AS [Constraint],tblCommTasks.constResponsible AS [Constraint Responsible]
-,tblCommTasks.systemOwner AS [System Owner]
+,tblCommTasks.clientDate AS [Client Date],tblCommTasks.constraints AS [Constraint]
+,responsible.fullName AS [Constraint Responsible]
+,responsible.title AS [Constraint Responsible Title]
+,sysOwner.fullName AS [System Owner],sysOwner.title AS [System Owner Title]
 FROM tblCommTasks
 INNER JOIN tblUnits ON tblCommTasks.unitId = tblUnits.unit_id
 INNER JOIN tblSystems ON tblCommTasks.systemId = tblSystems.sysId
 INNER JOIN tblPunchDiscipline ON tblCommTasks.disciplineId = tblPunchDiscipline.punchDiscId
 LEFT JOIN tblTop ON tblCommTasks.topId = tblTop.top_id
+LEFT JOIN tblMembers AS responsible ON tblCommTasks.constResponsibleId = responsible.memberId
+LEFT JOIN tblMembers AS sysOwner ON tblCommTasks.systemOwnerId = sysOwner.memberId

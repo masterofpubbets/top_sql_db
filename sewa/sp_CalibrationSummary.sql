@@ -28,7 +28,7 @@ tblunits.unit_name as Unit
 ,SUM(CASE WHEN tblInstruments.calibration_date BETWEEN DATEADD(day,-6,@date) AND @date THEN 1 ELSE 0 END) AS [Calibration Weekly]
 FROM tblInstruments
 INNER JOIN tblUnits ON tblUnits.unit_id = tblInstruments.unit_id
-WHERE tblunits.unit_name in ('00','10')
+WHERE tblunits.unit_name in ('00','10','20')
 AND calibration_require=1
 AND tblInstruments.active=1
 GROUP BY tblunits.unit_name

@@ -3,6 +3,6 @@ ALTER PROC [dbo].[sp_TOPSetTargetDate]
 @tDate date = null
 AS
 update tblTOP
-set resolve_issues_date = @tDate
+set targetDate = @tDate
 where top_id = @id 
 GO

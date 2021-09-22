@@ -21,13 +21,15 @@ ID Int,
 [Raised By] NVARCHAR(100),
 [Raised By Title] NVARCHAR(250),
 [Cons. Closed Date] DATE,
+[Cleared BY] NVARCHAR(100),
 [Offical CLosed Date] DATE,
 [Target Date] DATE,
 Issues NVARCHAR(MAX),
 Remarks NVARCHAR(MAX),
 [Top Flag] NVARCHAR(100),
 appCreatedDate DATE,
-Topic NVARCHAR(255)
+Topic NVARCHAR(255),
+[TOP Type] NVARCHAR(255)
 )
 insert into #tempPunch
 EXEC sp_getPunches
@@ -41,13 +43,13 @@ FROM (SELECT DISTINCT [Subcontractor]  FROM #tempPunch WHERE [Category] = 'A' AN
 FOR xml path ('') ,TYPE).value('.' ,'NVARCHAR(MAX)'),1,1,'') 
 
 set @result = '
-            SELECT memberPending.[Top],memberPending.[Top Description]
+            SELECT memberPending.[Top],memberPending.[Top Description],memberPending.[TOP Type]
             ,CASE WHEN PunchTargetDate.[Target Date] = ''1/1/2100'' THEN ''Pending Target Date'' ELSE CONVERT(NVARCHAR(50), PunchTargetDate.[Target Date]) END AS [Target Date]
             ,PunchTargetDate.[Open Punches],' + @col + '
             FROM (
-                SELECT [Top],[Top Description], ' + @col + ' FROM 
+                SELECT [Top],[Top Description],[TOP Type], ' + @col + ' FROM 
                 (
-                    SELECT ID,[Top],[Top Description],[Cons. Closed Date],[Subcontractor]
+                    SELECT ID,[Top],[Top Description],[Cons. Closed Date],[Subcontractor],[TOP Type]
 
                     FROM #tempPunch
 				    WHERE [Offical CLosed Date] IS NULL AND [Category] = ''A'' AND [Cons. Closed Date] IS NULL

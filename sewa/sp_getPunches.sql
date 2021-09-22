@@ -12,13 +12,16 @@ tblPunchList.punchId as ID
 ,tblPunchList.outage AS Outage
 ,tblPunchList.createdDate AS [Created On]
 ,originator.fullname AS [Raised By],originator.title AS [Raised By Title]
-,tblPunchList.internalClosedDate AS [Clear Date],tblPunchList.closedDate AS [Official Closed Date]
+,tblPunchList.internalClosedDate AS [Clear Date]
+,tblPunchList.internalClosedResponsible AS [Cleared BY]
+,tblPunchList.closedDate AS [Official Closed Date]
 ,tblPunchList.targetDate AS [Target Date]
 ,tblPunchList.Issues
 ,tblPunchList.remarks AS Remarks
 ,tblTop.war_room_selected AS [Top Flag]
 ,tblPunchList.appCreatedDate
 ,tblTopic.topicName AS [Topic]
+,tblTOP.type_name AS [TOP Type]
 
 FROM tblPunchList
 INNER JOIN tblPunchDiscipline ON tblPunchList.punchDiscId = tblPunchDiscipline.punchDiscId

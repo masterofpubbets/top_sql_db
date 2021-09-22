@@ -1,4 +1,4 @@
-CREATE PROC sp_getInstruments
+ALTER PROC sp_getInstruments
 AS
 SELECT tblUnits.unit_name AS Unit,tblTOP.top_name AS [TOP Name]
 ,tblInstruments.ins_id AS ID,tblInstruments.tag AS Tag,tblInstruments.installation_actid AS [Installation ActId]
@@ -8,12 +8,15 @@ SELECT tblUnits.unit_name AS Unit,tblTOP.top_name AS [TOP Name]
 ,tblInstruments.po AS [PO],tblInstruments.pid AS [P&ID]
 ,CASE WHEN tblInstruments.calibration_require =1 THEN 'Yes' ELSE 'No' END AS [Calibration Required]
 ,tblInstruments.calibration_date AS [Calibration Date]
+,tblInstruments.calibrationRFINo AS [Calibration RFI No]
 ,tblInstruments.installed_date AS [Installed Date]
 ,CASE WHEN tblInstruments.hookup_require = 1 THEN 'Yes' ELSe 'No' END AS [Hookup Required]
 ,CASE WHEN tblInstruments.hookup_require = 1 THEN tblInstruments.hookup_type ELSE 'N/A' END AS [Hookup Type]
 ,tblInstruments.hookup_date AS [Hookup Date]
+,tblInstruments.hookupRFINo AS [Hookup RFI No]
 ,CASE WHEN tblInstruments.leak_test_require = 1 THEN 'Yes' ELSE 'No' END AS [Leak Test Required]
 ,tblInstruments.leak_test_date AS [Leak Test Date]
+,tblInstruments.leakTestRFINo AS [Leak Test RFI No]
 ,tblInstruments.test_date AS [Test Date],tblInstruments.remarks AS Remarks,tblInstruments.last_update_source AS [Last Update Source]
 ,tblInstruments.oldTag AS [Old Tag],tblInstruments.active AS Active
 FROM tblInstruments WITH (NoLock)

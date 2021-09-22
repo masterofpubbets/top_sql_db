@@ -52,6 +52,7 @@ FROM tblCables WITH (NOLOCK)
 INNER JOIN tblUnits On tblCables.unit_id =tblunits.unit_id
 WHERE tblunits.unit_name in ('00','10','20')
 AND tblCables.active=1
+AND [discipline] <> 'Telecomm'
 GROUP BY ROLLUP(tblunits.unit_name,tblCables.discipline)
 ) as vSummary
 

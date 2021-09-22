@@ -1,10 +1,10 @@
-CREATE PROC [dbo].[spImportTempLineList]
+ALTER PROC [dbo].[spImportTempLineList]
 
 AS
 
 DECLARE lineList_cursor CURSOR FOR 
     SELECT [status],[plant],[unit],[system],[subsystem],[equipmentCode],[branchNumber],[unitName],[drawingNumber]
-    ,[sheet],[revision],[nominalSize],[rating],[materialClass],[material],[schedule],[fluidService],[enviroment]
+    ,[sheet],[revision],[nominalSize],[rating],[materialClass],[material],[schedule],[Schedule_mm],[fluidService],[enviroment]
     ,[streamId],[designPressure],[designTemperature],[operatingPressure],[operatingTemprature],[operatingMaxTemprature],[userFullName] 
     FROM [PIPING].[tblLineList_temp]; 
 
@@ -24,6 +24,7 @@ DECLARE @rating NVARCHAR(50)
 DECLARE @materialClass NVARCHAR(100)
 DECLARE @material NVARCHAR(100)
 DECLARE @schedule NVARCHAR(50)
+DECLARE @schedule_mm FLOAT
 DECLARE @fluidService NVARCHAR(100)
 DECLARE @enviroment NVARCHAR(50)
 DECLARE @streamId NVARCHAR(50)
@@ -42,7 +43,7 @@ DECLARE @tt NVARCHAR(50)
 
 OPEN lineList_cursor;
 FETCH NEXT FROM lineList_cursor INTO @status,@plant,@unit,@system,@subsystem,@equipmentCode,@branchNumber,@unitName,@drawingNumber,@sheet,@revision,@nominalSize,@rating,@materialClass,
-@material,@schedule,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,
+@material,@schedule,@schedule_mm,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,
 @operatingPressure,@operatingTemprature,@operatingMaxTemprature,@userFullName;
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
@@ -66,12 +67,12 @@ BEGIN
 						INSERT INTO [PIPING].[tblLineList] (
                             [status],[plant],[unit],[system],[subsystem],[equipmentCode],[branchNumber]
                             ,[unitId],[drawingNumber],[sheet],[revision],[nominalSize],[rating],[materialClass],[material]
-                            ,[schedule],[fluidService],[enviroment],[streamId],[designPressure],[designTemperature],[operatingPressure]
+                            ,[schedule],[Schedule_mm],[fluidService],[enviroment],[streamId],[designPressure],[designTemperature],[operatingPressure]
                             ,[operatingTemprature],[operatingMaxTemprature],[active],[engineeringBy])
 						VALUES (
                             @status,@plant,@unit,@system,@subsystem,@equipmentCode,@branchNumber
                             ,@unitId,@drawingNumber,@sheet,@revision,@nominalSize,@rating,@materialClass,@material
-                            ,@schedule,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,@operatingPressure
+                            ,@schedule,@schedule_mm,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,@operatingPressure
                             ,@operatingTemprature,@operatingMaxTemprature,1,@userFullName)
 					END
 				ELSE
@@ -93,6 +94,7 @@ BEGIN
                             materialClass = @materialClass,
                             material = @material,
                             schedule = @schedule,
+                            Schedule_mm = @schedule_mm,
                             fluidService = @fluidService,
                             enviroment = @enviroment,
                             streamId = @streamId,
@@ -109,7 +111,7 @@ BEGIN
 
 
 FETCH NEXT FROM lineList_cursor INTO @status,@plant,@unit,@system,@subsystem,@equipmentCode,@branchNumber,@unitName,@drawingNumber,@sheet,@revision,@nominalSize,@rating,@materialClass,
-@material,@schedule,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,
+@material,@schedule,@schedule_mm,@fluidService,@enviroment,@streamId,@designPressure,@designTemperature,
 @operatingPressure,@operatingTemprature,@operatingMaxTemprature,@userFullName;
 
 END;
