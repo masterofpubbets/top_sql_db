@@ -29,7 +29,8 @@ Remarks NVARCHAR(MAX),
 [Top Flag] NVARCHAR(100),
 appCreatedDate DATE,
 Topic NVARCHAR(255),
-[TOP Type] NVARCHAR(255)
+[TOP Type] NVARCHAR(255),
+COD NVARCHAR(100)
 )
 insert into #tempPunch
 EXEC sp_getPunches

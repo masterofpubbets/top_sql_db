@@ -4,7 +4,7 @@ SELECT
 tblCommTasks.comTaskId AS [ID]
 ,tblCommTasks.phase AS Phase
 ,tblUnits.unit_name AS [Unit],tblSystems.systemKKS AS [System KKS],tblSystems.systemDescription AS [System Description]
-,tblTop.top_name AS [TOP]
+,tblTop.top_name AS [TOP],tblTop.transfer_date AS [TOP Transfer Date]
 ,tblCommTasks.itemKKS AS [Item KKS],tblCommTasks.itemDescription AS [Item Description]
 ,tblCommTasks.typeName AS [Type],tblCommTasks.className AS [Class],tblPunchDiscipline.punchDiscipline AS [Discipline]
 ,tblCommTasks.sheetDescription AS [Sheet Description]

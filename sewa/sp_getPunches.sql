@@ -22,6 +22,7 @@ tblPunchList.punchId as ID
 ,tblPunchList.appCreatedDate
 ,tblTopic.topicName AS [Topic]
 ,tblTOP.type_name AS [TOP Type]
+,tblTOP.COD
 
 FROM tblPunchList
 INNER JOIN tblPunchDiscipline ON tblPunchList.punchDiscId = tblPunchDiscipline.punchDiscId
