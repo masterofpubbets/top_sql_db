@@ -1,6 +1,6 @@
 ALTER PROC sp_getInstruments
 AS
-SELECT tblUnits.unit_name AS Unit,tblTOP.top_name AS [TOP Name]
+SELECT tblUnits.unit_name AS Unit,tblTOP.top_name AS [TOP]
 ,tblInstruments.ins_id AS ID,tblInstruments.tag AS Tag,tblInstruments.installation_actid AS [Installation ActId]
 ,tblInstruments.Installation_scope AS [Installation Scope],tblInstruments.device_type AS [Device Type]
 ,CASE WHEN tblInstruments.main_device = 1 THEN 'Yes' ELSE 'Accessory' END AS [Main Device]
