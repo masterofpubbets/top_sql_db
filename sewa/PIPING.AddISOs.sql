@@ -27,9 +27,10 @@ FROM (
     ,TEMP.[status] AS [Current STATUS],TEMP.[mirNumber] AS [Current MIR NUMBER],TEMP.[testPack] AS [Current TEST PACK]
 
     FROM PIPING.tblIsos_temp AS TEMP 
-    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(TEMP.PDSLINEID,' ','') = REPLACE(LINES.lineKKS,' ','')
+    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(REPLACE(TEMP.PDSLINEID,' ',''),'-','') = REPLACE(REPLACE(LINES.lineKKS,' ',''),'-','')
     INNER JOIN PIPING.tblIsos AS ISO ON ISO.lineId = LINES.lineId
     WHERE TEMP.isFixed IS NULL
+    AND TEMP.iso = ISO.iso
 ) AS v
 -----------------------
 
@@ -49,9 +50,10 @@ FROM (
     ,TEMP.[status] AS [Current STATUS],TEMP.[mirNumber] AS [Current MIR NUMBER],TEMP.[testPack] AS [Current TEST PACK]
 
     FROM PIPING.tblIsos_temp AS TEMP 
-    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(TEMP.PDSLINEID,' ','') = REPLACE(LINES.lineKKS,' ','')
+    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(REPLACE(TEMP.PDSLINEID,' ',''),'-','') = REPLACE(REPLACE(LINES.lineKKS,' ',''),'-','')
     INNER JOIN PIPING.tblIsos AS ISO ON ISO.lineId = LINES.lineId
     WHERE TEMP.isFixed IS NULL
+    AND TEMP.iso = ISO.iso
 ) AS v
 -----------------------
 
@@ -68,7 +70,7 @@ FROM (
     ,TEMP.[rev],TEMP.[revDate],TEMP.[remarks],TEMP.[status],TEMP.[mirNumber],TEMP.[testPack]
 
     FROM PIPING.tblIsos_temp AS TEMP 
-    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(TEMP.PDSLINEID,' ','') = REPLACE(LINES.lineKKS,' ','')
+    INNER JOIN PIPING.tblLineList AS LINES ON REPLACE(REPLACE(TEMP.PDSLINEID,' ',''),'-','') = REPLACE(REPLACE(LINES.lineKKS,' ',''),'-','')
     WHERE TEMP.isFixed IS NULL
 ) AS v
 -----------------------
